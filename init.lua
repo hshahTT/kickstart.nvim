@@ -556,6 +556,21 @@ require('lazy').setup({
           --  For example, in C this would take you to the header.
           map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
+          -- basedpyright/pylance import code actions
+          -- Add all missing imports in the file at once (auto-applies if unambiguous)
+          map('<leader>oi', function()
+            vim.lsp.buf.code_action {
+              context = { only = { 'source.addMissingImports' } },
+              apply = true,
+            }
+          end, '[O]rganize/Add Missing [I]mports')
+          -- Show import quickfix suggestions for the symbol under the cursor
+          map('<leader>qi', function()
+            vim.lsp.buf.code_action {
+              context = { only = { 'quickfix' } },
+            }
+          end, '[Q]uick-fix [I]mport')
+
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
@@ -601,21 +616,27 @@ require('lazy').setup({
       ---@type table<string, vim.lsp.Config>
       local servers = {
         clangd = {},
+        ruff = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
         basedpyright = {
+          before_init = function(_, config)
+            -- Detect the active venv at connection time so import suggestions work correctly.
+            -- (Evaluating exepath at startup would miss venvs activated after Neovim launched.)
+            local venv = os.getenv 'VIRTUAL_ENV' or os.getenv 'CONDA_PREFIX'
+            config.settings.python.pythonPath = venv and (venv .. '/bin/python') or vim.fn.exepath 'python'
+          end,
           settings = {
             basedpyright = {
               analysis = {
                 useLibraryCodeForTypes = true,
                 typeCheckingMode = 'basic',
                 reportMissingTypeStubs = false,
+                diagnosticMode = 'workspace',
               },
             },
-            python = {
-              pythonPath = vim.fn.exepath 'python', -- Uses the python in your PATH (active venv)
-            },
+            python = {},
           },
         },
         --
