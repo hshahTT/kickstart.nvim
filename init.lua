@@ -231,7 +231,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- [[ Filetype detection ]]
-vim.filetype.add({ extension = { mlir = 'mlir' } })
+vim.filetype.add { extension = { mlir = 'mlir' } }
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -561,18 +561,26 @@ require('lazy').setup({
 
           -- basedpyright/pylance import code actions
           -- Add all missing imports in the file at once (auto-applies if unambiguous)
-          map('<leader>oi', function()
-            vim.lsp.buf.code_action {
-              context = { only = { 'source.addMissingImports' } },
-              apply = true,
-            }
-          end, '[O]rganize/Add Missing [I]mports')
+          map(
+            '<leader>oi',
+            function()
+              vim.lsp.buf.code_action {
+                context = { only = { 'source.addMissingImports' } },
+                apply = true,
+              }
+            end,
+            '[O]rganize/Add Missing [I]mports'
+          )
           -- Show import quickfix suggestions for the symbol under the cursor
-          map('<leader>qi', function()
-            vim.lsp.buf.code_action {
-              context = { only = { 'quickfix' } },
-            }
-          end, '[Q]uick-fix [I]mport')
+          map(
+            '<leader>qi',
+            function()
+              vim.lsp.buf.code_action {
+                context = { only = { 'quickfix' } },
+              }
+            end,
+            '[Q]uick-fix [I]mport'
+          )
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -913,7 +921,7 @@ require('lazy').setup({
     branch = 'main',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
-      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'mlir', 'query', 'vim', 'vimdoc' }
+      local parsers = { 'bash', 'c', 'cpp', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'mlir', 'query', 'vim', 'vimdoc' }
       require('nvim-treesitter').install(parsers)
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
@@ -929,8 +937,9 @@ require('lazy').setup({
 
           -- enables treesitter based folds
           -- for more info on folds see `:help folds`
-          -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-          -- vim.wo.foldmethod = 'expr'
+          vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+          vim.wo.foldmethod = 'expr'
+          vim.wo.foldenable = false
 
           -- enables treesitter based indentation
           vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
