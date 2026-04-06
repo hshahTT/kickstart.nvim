@@ -42,6 +42,9 @@ return {
     'folke/snacks.nvim',
     priority = 1000,
     lazy = false,
+    keys = {
+      { '<leader>e', function() Snacks.explorer() end, desc = 'Toggle Snacks Explorer' },
+    },
     ---@type snacks.Config
     opts = {
       -- your configuration comes here
