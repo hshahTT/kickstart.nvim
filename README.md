@@ -321,3 +321,26 @@ asdf reshim neovim
 </details>
 
 </details>
+
+
+### Het's setup instructions
+- Ensure:
+	- `~/.local/share` is symlinked to `/localdev/hshah/.local/share` (to prevent OOM issues)
+	- `/localdev/hshah/nvim` exists `git clone git@github.com:hshahTT/kickstart.nvim.git nvim`
+	- `~/.config/nvim` is symlinked to `/localdev/hshah/nvim`
+-
+- `sudo apt install ripgrep fd-find unzip xclip -y`
+- `sudo rm -rf /opt/nvim-linux-x86_64`
+- `curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz`
+- `sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz`
+- Check `.bashrc`, make sure `export PATH="$PATH:/opt/nvim-linux-x86_64/bin"` exists, add that line at the end if it doesn't
+- Install tree-sitter linux x64 package from https://github.com/tree-sitter/tree-sitter/releases
+	- For v0.26.7: `wget https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.7/tree-sitter-cli-linux-x64.zip`
+	- `unzip tree-sitter-cli-linux-x64.zip`
+	- `chmod +x tree-sitter`
+	- `sudo mv tree-sitter /opt/nvim-linux-x86_64/bin`
+-
+- Also install a [Nerd Font](https://www.nerdfonts.com/#home) in your terminal (to get icon support in neovim)
+	- Find a Nerd Font you like: `brew search nerd-font`
+	- Install it: `brew install font-hack-nerd-font`
+	- For iTerm go to settings (`Cmd`+`,`), Profiles, and select the installed font
