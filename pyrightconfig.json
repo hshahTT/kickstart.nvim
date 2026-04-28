@@ -3,4 +3,5 @@
 	"venv": "venv",
 	"reportMissingTypeStubs": false,
 	"typeCheckingMode": "basic",
+	"reportPrivateImportUsage": "none",
 }
