@@ -44,6 +44,8 @@ return {
     lazy = false,
     keys = {
       { '<leader>e', function() Snacks.explorer() end, desc = 'Toggle Snacks Explorer' },
+      { '<leader>gg', function() Snacks.lazygit() end, desc = 'Lazygit' },
+      { '<leader>gl', function() Snacks.lazygit.log() end, desc = 'Lazygit Log (cwd)' },
     },
     ---@type snacks.Config
     opts = {
@@ -87,5 +89,17 @@ return {
       { '<leader>aa', '<cmd>ClaudeCodeDiffAccept<cr>', desc = 'Accept diff' },
       { '<leader>ad', '<cmd>ClaudeCodeDiffDeny<cr>', desc = 'Deny diff' },
     },
+  },
+  {
+    'sindrets/diffview.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    cmd = { 'DiffviewOpen', 'DiffviewClose', 'DiffviewToggleFiles', 'DiffviewFocusFiles', 'DiffviewFileHistory' },
+    keys = {
+      { '<leader>gd', '<cmd>DiffviewOpen<cr>', desc = 'Diffview: open (working tree)' },
+      { '<leader>gD', '<cmd>DiffviewClose<cr>', desc = 'Diffview: close' },
+      { '<leader>gh', '<cmd>DiffviewFileHistory %<cr>', desc = 'Diffview: current file history' },
+      { '<leader>gH', '<cmd>DiffviewFileHistory<cr>', desc = 'Diffview: repo history' },
+    },
+    opts = {},
   },
 }
