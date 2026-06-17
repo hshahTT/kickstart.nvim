@@ -1,6 +1,27 @@
 #!/bin/bash
 
 cd ~
+LOCALDEV_PATH=/localdev/hshah
+mkdir -p $LOCALDEV_PATH/.local/share
+
+if [ -e "~/.local/share" ] && [ ! -L "~/.local/share"]; then
+    # Path exists but it isn't a symlink
+    mv ~/.local/share/* $LOCALDEV_PATH/share
+    rm -rf ~/.local/share
+fi
+
+ln -snf "$LOCALDEV_PATH/.local/share" "~/.local/share"
+
+if [ ! -e "$LOCALDEV_PATH/nvim" ]; then
+    git clone git@github.com:hshahTT/kickstart.nvim.git $LOCALDEV_PATH/nvim
+else
+    cd $LOCALDEV_PATH/nvim
+    git pull
+    cd ~
+fi
+
+ln -snf "$LOCALDEV_PATH/nvim" "~/.config/nvim"
+
 rm nvim-linux-x86_64.tar.gz
 sudo rm -rf /opt/nvim-linux-x86_64
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
