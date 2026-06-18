@@ -3,6 +3,8 @@
 cd ~
 LOCALDEV_PATH=/localdev/hshah
 mkdir -p $LOCALDEV_PATH/.local/share
+mkdir -p ~/.local
+mkdir -p ~/.config
 
 if [ -e "~/.local/share" ] && [ ! -L "~/.local/share"]; then
     # Path exists but it isn't a symlink
@@ -10,7 +12,7 @@ if [ -e "~/.local/share" ] && [ ! -L "~/.local/share"]; then
     rm -rf ~/.local/share
 fi
 
-ln -snf "$LOCALDEV_PATH/.local/share" "~/.local/share"
+ln -snf $LOCALDEV_PATH/.local/share ~/.local/share
 
 if [ ! -e "$LOCALDEV_PATH/nvim" ]; then
     git clone git@github.com:hshahTT/kickstart.nvim.git $LOCALDEV_PATH/nvim
@@ -20,7 +22,7 @@ else
     cd ~
 fi
 
-ln -snf "$LOCALDEV_PATH/nvim" "~/.config/nvim"
+ln -snf $LOCALDEV_PATH/nvim ~/.config/nvim
 
 rm nvim-linux-x86_64.tar.gz
 sudo rm -rf /opt/nvim-linux-x86_64
