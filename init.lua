@@ -116,6 +116,64 @@ vim.o.showmode = false
 --  See `:help 'clipboard'`
 vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 
+-- [[ Clipboard over SSH via OSC 52 ]]
+--  OSC 52 is a terminal escape sequence that asks the *terminal emulator* (i.e. the one
+--  running on your laptop) to put text on its clipboard. That makes yanks land on the
+--  laptop clipboard even though Neovim is running on a remote box.
+--
+--  We deliberately override Neovim's auto-detection: these dev boxes have `xclip`
+--  installed, so Neovim would otherwise pick xclip and copy into the remote (headless)
+--  X11 clipboard, which is useless from the laptop.
+--
+--  Set `vim.g.force_osc52 = false` before this block to always use the native provider,
+--  or `true` to always use OSC 52.
+local function want_osc52()
+  if vim.g.force_osc52 ~= nil then return vim.g.force_osc52 end
+  -- An SSH session, or any session with no local display to own a real clipboard.
+  local ssh = vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
+  local has_display = vim.env.DISPLAY ~= nil or vim.env.WAYLAND_DISPLAY ~= nil
+  return ssh or not has_display
+end
+
+if want_osc52() then
+  local osc52 = require 'vim.ui.clipboard.osc52'
+
+  -- Most terminals refuse to *read* the clipboard over OSC 52 (it would let any remote
+  -- program exfiltrate your clipboard), and the built-in reader blocks for up to 10s
+  -- waiting for a reply that never comes. So we mirror every copy into a local cache and
+  -- paste from that instead: `p`/`"+p` stay instant and paste back what you yanked.
+  --  To use real OSC 52 reads in a terminal that supports it (kitty with
+  --  `clipboard_control` set to include `read-clipboard`, WezTerm, iTerm2 with
+  --  "Applications in terminal may access clipboard"), set `vim.g.osc52_paste = true`.
+  local cache = { ['+'] = {}, ['*'] = {} }
+
+  local function copy(reg)
+    local send = osc52.copy(reg)
+    return function(lines, regtype)
+      cache[reg] = { lines, regtype }
+      -- nvim_ui_send needs an attached UI; don't blow up in `--headless` runs.
+      pcall(send, lines)
+    end
+  end
+
+  local function paste(reg)
+    if vim.g.osc52_paste then return osc52.paste(reg) end
+    return function()
+      local entry = cache[reg]
+      if entry[1] then return entry[1], entry[2] end
+      -- Nothing copied yet this session: fall back to the unnamed register so `"+p`
+      -- still does something sensible right after a plain `y`.
+      return vim.split(vim.fn.getreg '"', '\n'), vim.fn.getregtype '"'
+    end
+  end
+
+  vim.g.clipboard = {
+    name = 'OSC 52',
+    copy = { ['+'] = copy '+', ['*'] = copy '*' },
+    paste = { ['+'] = paste '+', ['*'] = paste '*' },
+  }
+end
+
 -- Enable break indent
 vim.o.breakindent = true
 
